@@ -28,15 +28,28 @@ Then we can run this command to create the new container:
 The container will have whatever name is put after the '--name' parameter and will tie port 80 of the host machine to port 80 of the docker container.
 If you're successful, you should see this page when connecting to the page through your web browser (via [PRIVATE IP]:80):
 ![It Works Page](doc_images/ItWorks.png)
-Not doxxing myself lol
 
 # DockerHub
 ## Dockerhub Repo
+Creating a DockerHub repo is easy enough. First create a DockerHub account, then select the "repositories" option in DockerHub. From here, select the blue "Create repository" button at the top of the page, then enter a name for the repo. After doing so, you can create the repo.
 ## Authenticate via CLI
+Authenticating and logging into dockerhub from the command line can (surprisingly) be done with one easy command:
+
+`docker login -u [USERNAME] -p [PASSWORD]`
 ## Push to Dockerhub
+To push to DockerHub, first you'll need to log in using the command above. After loggin in, you'll first need to build your container image:
+
+`docker build -t <your_username>/my-private-repo .`
+> Make sure you're running this command in the same directory as your Dockerfile
+After doing that, you can push to DockerHub:
+
+`docker push [USERNAME]/[REPO NAME]`
 
 # Github Actions
 ## Github Secrets
+Github Secrets are encrypted environment variables that can be set per organization or per repository. They can be used in Github actions to help in automation. For example we'll be using secrets to store our login information to DockerHub so that actions can automate docker pushes.
+To configure secrets, go to the settings of your repository and select "Secrets" under the "Security" option.
+In the Secrets menu, click "New repository secret", and enter a name for the secret and the secret content itself. (In this case, I created two secrets for my docker username and password)
 ## Behavior of Github workflow
 
 # Deployment
