@@ -23,10 +23,11 @@ To build the docker container (using Apache2), we'll download the official httpd
 Then we can run this command to create the new container:
 
 `docker run -d --name [CONTAINER NAME] -p 80:80 -d httpd`
-> DEV NOTE: I'll use the name 'project_5_cont'
+> NOTE: I'll use the name 'project_5_cont'
 
 The container will have whatever name is put after the '--name' parameter and will tie port 80 of the host machine to port 80 of the docker container.
 If you're successful, you should see this page when connecting to the page through your web browser (via [PRIVATE IP]:80):
+
 ![It Works Page](doc_images/ItWorks.png)
 
 # DockerHub
@@ -39,8 +40,9 @@ Authenticating and logging into dockerhub from the command line can (surprisingl
 ## Push to Dockerhub
 To push to DockerHub, first you'll need to log in using the command above. After loggin in, you'll first need to build your container image:
 
-`docker build -t <your_username>/my-private-repo .`
-> Make sure you're running this command in the same directory as your Dockerfile
+`docker build -t [USERNAME]/[YOUR REPO] .`
+> NOTE: Make sure you're running this command in the same directory as your Dockerfile.
+
 After doing that, you can push to DockerHub:
 
 `docker push [USERNAME]/[REPO NAME]`
@@ -48,12 +50,22 @@ After doing that, you can push to DockerHub:
 # Github Actions
 ## Github Secrets
 Github Secrets are encrypted environment variables that can be set per organization or per repository. They can be used in Github actions to help in automation. For example we'll be using secrets to store our login information to DockerHub so that actions can automate docker pushes.
+
 To configure secrets, go to the settings of your repository and select "Secrets" under the "Security" option.
 In the Secrets menu, click "New repository secret", and enter a name for the secret and the secret content itself. (In this case, I created two secrets for my docker username and password)
 ## Behavior of Github workflow
+Github Workflows (actions) are automated tasks that Github can run whenever a condition is met. In this project, Github Actions are used to automatically push a docker image to DockerHub. 
+
+The YAML file used can be found in [this tutorial](https://docs.github.com/en/actions/publishing-packages/publishing-docker-images#publishing-images-to-docker-hub). The secrets created earlier are used in lines 27 and 28 of the file to log into Docker on your behalf. This specific file pushes the image to Dockerhub whenever a release is published.
 
 # Deployment
 ## Container Restart Script
+The Container Restart Script (redeploy.sh) is a simple bash script that pulls, stops, then restarts this project's docker container. Lines 2,3, and 5 need to be changed to use your repository and docker container.
 ## Server Webhook
-## Webhook Task
+This part takes place on an AWS Ubuntu Instance (our server). First, we set up a listener on the server using Go, effectively turning the webhook into a service to be tapped in to. After installing webhook onto the server, we can edit the 'webhook.service' file in '/etc/systemd/system/webhook.service'. This is the use of the Webhook Task Definition File ([WIP]).
+
+After setting up the webhook service file, we can enable and start the webhook service with these two commands:
+`systemctl enable webhook.service`
+`systemctl start webhook.service`
 ## Notifier(s) in Git/Docker Hub
+<>
