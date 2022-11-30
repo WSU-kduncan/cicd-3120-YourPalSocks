@@ -1,7 +1,7 @@
 # Project Overview:
 This final project for CEG 3120 is to build containers that act as version control for a whole machine rather than just one project. Say a whole team is hired at a company to work on a website and will all need new computers to start working. Rather than wasting the new hires' time downloading and installing everything, they can have their computer's image set to a docker image to quickly become productive.
 
-[DIAGRAM GOES HERE]
+![Diagram Image](doc_images/Diagram.png)
 
 # Run Project Locally
 ## Installing Docker
@@ -62,10 +62,17 @@ The YAML file used can be found in [this tutorial](https://docs.github.com/en/ac
 ## Container Restart Script
 The Container Restart Script (redeploy.sh) is a simple bash script that pulls, stops, then restarts this project's docker container. Lines 2,3, and 5 need to be changed to use your repository and docker container.
 ## Server Webhook
-This part takes place on an AWS Ubuntu Instance (our server). First, we set up a listener on the server using Go, effectively turning the webhook into a service to be tapped in to. After installing webhook onto the server, we can edit the 'webhook.service' file in '/etc/systemd/system/webhook.service'. This is the use of the Webhook Task Definition File ([WIP]).
+This part takes place on an AWS Ubuntu Instance (our server). First, we set up a listener on the server using Go, effectively turning the webhook into a service to be tapped in to. After installing webhook onto the server, we can edit the 'webhook.service' file in '/etc/systemd/system/webhook.service'. This is the use of the Webhook Task Definition File (hooks.json).
+
+The hooks.json (webhook definition file) creates the webhook, and sets a script to be run in a certain directory whemever triggered by the endpoint service.
 
 After setting up the webhook service file, we can enable and start the webhook service with these two commands:
 `systemctl enable webhook.service`
 `systemctl start webhook.service`
-## Notifier(s) in Git/Docker Hub
-<>
+
+After the webhook definition file and service are set up, this command can be run to activate the endpoint:
+`webhook -hooks [HOOK FILE].json -verbose`
+## Notifier(s) in Github
+To set up a webhook notifier in Github, you'll first need webhook installed and configured. Once done, we'll need a new action in our Github actions YAML file (.github/workflows/[ACTIONS FILE].yml). From here we'll want to set up a new job to attach to the endpoint (see redeploy job in docker-image.yml).
+
+This action requires a new secret, named 'DEPLOY_WEBHOOK_URL', which is the address of the webhook endpoint that triggers the redeploy script.
